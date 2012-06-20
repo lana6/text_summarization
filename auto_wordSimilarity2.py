@@ -26,7 +26,7 @@ for index in file_lines:
 for index in tokenize_file_lines:
     print index
     print "" # todo 20th June 2012 - take out any comma's full stops abreviations etc....
-
+#test
 total_common_words = []
 weighted_sen = []
 cnt = 1
