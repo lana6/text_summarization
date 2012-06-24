@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-
-#import nltk
 import itertools
+from itertools import *
 import re
 import math
 import networkx as nx
@@ -19,11 +18,6 @@ while line != '':
     line = file_variable.readline()
 
 
-#tokenize_file_lines = []
-
-#for index in file_lines: 
- #  tokenize_file_lines.append(nltk.word_tokenize(index))
-
 refined_file_lines = []
 
 for sentence in file_lines: # For characters such as letters, digits and underscore only
@@ -31,30 +25,11 @@ for sentence in file_lines: # For characters such as letters, digits and undersc
     if re.findall(r"\w+",file_lines[index]):# \w+ identifies only letters, digits and underscore.
         refined_file_lines.append(re.findall(r"\w+",file_lines[index]))
 
-#tokenize_file_lines = []
-
-#for index in refined_file_lines: 
-  # tokenize_file_lines.append(nltk.word_tokenize(index))
-
 total_common_words = []
 weighted_sen = []
 ele_name = []
 tot_element_names = []
-#print refined_file_lines
-#print ""
-#if not tokenize_file_lines[1]:
-  # print "this list is empty"
- #  print tokenize_file_lines[1]
-   #del tokenize_file_lines[1]
-#print ""
-#print ""
-#print tokenize_file_lines[1]
-#print ""
-#print ""
-#refind = re.findall(r"\w+",file_lines[2])
-#print refind
-#print ""
-#print ""
+
 for w1, w2 in itertools.combinations(refined_file_lines, 2): 
    common_words = []
    index1 = refined_file_lines.index(w1) + 1
@@ -68,93 +43,77 @@ for w1, w2 in itertools.combinations(refined_file_lines, 2):
    ele_name = [] # create a new list  
    if wight != 0.0:
        ele_name.append(index1)
-       ele_name.append(index2)  
+       ele_name.append(index2)
+       ele_name.append(wight)  
    if ele_name:
      tot_element_names.append(ele_name)
-  # print ""
-  # print ""
-  # print tot_element_names 
-
-print total_common_words
-print weighted_sen
-print tot_element_names
 
 
-print ""
-print ""
+# Begin to create PageRank
 
+#1 create multi-dimentional list. Each list begins with a new sentence ie [[[1,3,1.77],[1,7,098]],[[2,4,1.33],[2,6,0.77]]]
 
+grouped_nodes= []
+sub_tot_grouped_nodes = []
+tot_grouped_nodes = []
+var = 1
+for m,(i,j,x) in izip(count(),tot_element_names):   
+    index1 = tot_element_names.index([i,j,x]) # current index
+    if var == tot_element_names[index1][0]:
+     grouped_nodes.append([i,j,x]) # linked nodes with with weights info, grouped by [index][0](sentence)
+    if var  != tot_element_names[index1][0]:
+        sub_tot_grouped_nodes.append(grouped_nodes) # Allows each sentence list to be separated
+        grouped_nodes = [i,j,x]
+        var += 1   
+grouped_nodes = [i,j,x]
+sub_tot_grouped_nodes.append(grouped_nodes)       
+        
+print sub_tot_grouped_nodes
+
+tot_grouped_nodes.append(sub_tot_grouped_nodes)
 G = nx.Graph()
 
+pos=nx.spring_layout(G)
+
+total_var = []
 
 for index in range(len(file_lines)):
     var = "S" + str(index + 1)
     G.add_node(var)
-
-#print G.nodes()
+    total_var.append(var)
 
 for index in range(len(tot_element_names)):
-   #  if tot_element_names[index]:
-    #   print tot_element_names[index]     
      if tot_element_names[index]:
        var = 'S' + str(tot_element_names[index][0])
        var1 = 'S' + str(tot_element_names[index][1])
-       G.add_edge(var,var1)
+       var3 = tot_element_names[index][2]
+       G.add_edge(var,var1,{'weight':var3})
 
-print ""
-print ""      
-print G.edges()
-print ""
-print ""
-print G.nodes()
+#print ""
+#print ""      
+#print G.edges()
+#print ""
+#print ""
+#print G.nodes()
 
-nx.draw_circular(G)
+nx.draw_circular(G,node_color='m',node_size=500)
 
-plt.show()
-print ""
-print ""
-print nx.pagerank(G)
+#plt.show()
+#print ""
+#print ""
+#print nx.pagerank(G)
 
+pagerank_values = nx.pagerank(G)
 
+#print pagerank_values
+#print ""
+#print pagerank_values.keys()
+#print ""
+#print pagerank_values.values()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##for l1, l2 in itertools.combinations(tokenize_file_lines, 2): # two lists are chosen, l1 and l2 catches the lists
-  ##  common_words = []     
-   ## index1 = tokenize_file_lines.index(l1) + 1
-   ## print "l1", l1
-   ## print ""
-    ##print ""
-    ##print "l2" , l2
-    ##index2 = tokenize_file_lines(l2) + 1
-    ##for e1, e2 in itertools.product(l1, l2): # a cartian product of all the words is produced, e1 and e2 catches the elements 
-     ## if e1 == e2:
-       ## common_words.append(e1) 
-    ##total_common_words.append(common_words)
-    #wight = len(set(common_words)) / (math.log(len(l1),10) + math.log(len(l2),10))
-    #weighted_sen.append(wight)
-    #ele_name = [] # create a new list 
-    #if wight != 0.0:
-     #   ele_name.append(index1)
-      #  ele_name.append(index2)       
-       # cnt2+=1    
-    #tot_element_names.append(ele_name)
-
-##print total_common_words
+#for index in pagerank_values:
+ #   print ""
+  #  print index
 
 
 
