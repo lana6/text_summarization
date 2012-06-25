@@ -44,33 +44,50 @@ for w1, w2 in itertools.combinations(refined_file_lines, 2):
    if wight != 0.0:
        ele_name.append(index1)
        ele_name.append(index2)
-       ele_name.append(wight)  
-   if ele_name:
+       ele_name.append(wight)      
+   if ele_name: # Only do if ele_name is not empty
      tot_element_names.append(ele_name)
-
 
 # Begin to create PageRank
 
 #1 create multi-dimentional list. Each list begins with a new sentence ie [[[1,3,1.77],[1,7,098]],[[2,4,1.33],[2,6,0.77]]]
 
 grouped_nodes= []
-sub_tot_grouped_nodes = []
 tot_grouped_nodes = []
 var = 1
-for m,(i,j,x) in izip(count(),tot_element_names):   
+for (i,j,x) in tot_element_names:   
     index1 = tot_element_names.index([i,j,x]) # current index
     if var == tot_element_names[index1][0]:
      grouped_nodes.append([i,j,x]) # linked nodes with with weights info, grouped by [index][0](sentence)
     if var  != tot_element_names[index1][0]:
-        sub_tot_grouped_nodes.append(grouped_nodes) # Allows each sentence list to be separated
-        grouped_nodes = [i,j,x]
-        var += 1   
-grouped_nodes = [i,j,x]
-sub_tot_grouped_nodes.append(grouped_nodes)       
-        
-print sub_tot_grouped_nodes
+        tot_grouped_nodes.append(grouped_nodes) # Allows each sentence list to be separated
+        grouped_nodes = []
+        grouped_nodes.append([i,j,x])
+        var += 1 
+grouped_nodes = []  
+grouped_nodes.append([i,j,x])
+tot_grouped_nodes.append(grouped_nodes)       
+print tot_grouped_nodes
+node_len = len(tot_grouped_nodes)
+#temp_len = len(tot_grouped_nodes[0])
+#temp_len = len(tot_grouped_nodes[19])
 
-tot_grouped_nodes.append(sub_tot_grouped_nodes)
+
+print tot_grouped_nodes[0]
+print ""
+print tot_grouped_nodes[0][0]
+print ""
+print tot_grouped_nodes[0][0][0]
+
+
+print tot_grouped_nodes[0]
+print ""
+print tot_grouped_nodes[1][0]
+print ""
+print tot_grouped_nodes[0][0][1]
+print ""
+print tot_grouped_nodes[0][1][1]
+
 G = nx.Graph()
 
 pos=nx.spring_layout(G)
@@ -89,31 +106,30 @@ for index in range(len(tot_element_names)):
        var3 = tot_element_names[index][2]
        G.add_edge(var,var1,{'weight':var3})
 
-#print ""
-#print ""      
-#print G.edges()
-#print ""
-#print ""
-#print G.nodes()
+print ""
+print ""
+print G.edges()
+print ""
+print ""
+print G.nodes()
 
 nx.draw_circular(G,node_color='m',node_size=500)
 
-#plt.show()
-#print ""
-#print ""
-#print nx.pagerank(G)
+plt.show()
+print ""
+print ""
+print nx.pagerank(G)
 
 pagerank_values = nx.pagerank(G)
 
-#print pagerank_values
-#print ""
-#print pagerank_values.keys()
-#print ""
-#print pagerank_values.values()
+print pagerank_values
+print ""
+print pagerank_values.keys()
+print ""
+print pagerank_values.values()
 
-#for index in pagerank_values:
- #   print ""
-  #  print index
-
+for index in pagerank_values:
+  print ""
+  print index
 
 
