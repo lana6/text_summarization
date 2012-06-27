@@ -21,6 +21,8 @@ while line != '':
 
 refined_file_lines = []
 
+# \w+ is a regular expression, it transfers the data into letters, digits and underscore. Removes everything else.
+
 for sentence in file_lines: # For characters such as letters, digits and underscore only
     index = file_lines.index(sentence)
     if re.findall(r"\w+",file_lines[index]):# \w+ identifies only letters, digits and underscore.
@@ -30,6 +32,9 @@ total_common_words = []
 weighted_sen = []
 ele_name = []
 tot_element_names = []
+
+# Looks at each pair of sentences and checks for similar words. For each pair of sentences with similar words a 
+# weight is created.
 
 for w1, w2 in itertools.combinations(refined_file_lines, 2): 
    common_words = []
@@ -52,6 +57,8 @@ for w1, w2 in itertools.combinations(refined_file_lines, 2):
 # Begin to create PageRank
 
 #1 create multi-dimentional list. Each list begins with a new sentence ie [[[1,3,1.77],[1,7,098]],[[2,4,1.33],[2,6,0.77]]]
+#using tot_element_names list. 
+
 
 grouped_nodes= []
 tot_grouped_nodes = []
@@ -70,8 +77,8 @@ grouped_nodes.append([i,j,x])
 tot_grouped_nodes.append(grouped_nodes)       
 
 
-# Each list group needs a11 references to connected lists, this function appends linked lists where necessary 
-# A copy of tot_grouped_nodes is created as appending lists to it. A static list is needed in function.
+# Each list group created above needs to contain lists of a11 nodes linked to it.  This function appends linked lists where necessary 
+# A copy of tot_grouped_nodes is created as appending lists to the original. A static list is needed in function.
 
 
 cpy_grouped_nodes = []
@@ -86,13 +93,33 @@ for i in range(0, var_len):
         for j2 in range(0, len(cpy_grouped_nodes[i2])):
           if cpy_grouped_nodes[i][j][1] == cpy_grouped_nodes[i2][j2][0]:
              if flag == "negative": # Ensures that only one list is copied into the new group
-                 temp_list = cpy_grouped_nodes[i][j] # Identifies list to be copied
-                 tot_grouped_nodes[i2].extend([temp_list]) # List appened to group
+                 temp_list = cpy_grouped_nodes[i][j] # Identifies list to be copied                
+                 temp_list2 = []
+                 temp_list2.append(temp_list[1])
+                 temp_list2.append(temp_list[0])
+                 temp_list2.append(temp_list[2])
+                 tot_grouped_nodes[i2].extend([temp_list2]) # List appened to group                
                  flag = "positive" # Closes the door, this list cannot be copied to this group again
 
-for i in tot_grouped_nodes:
-  print i
-  print ""
+
+# For each node add up all the weighted linked values connected to it and save total to respective list.
+
+cpy_grouped_nodes = []
+cpy_grouped_nodes = copy.deepcopy(tot_grouped_nodes) # Copy of original created
+var_len = len(cpy_grouped_nodes)
+sum_weights = 0
+list_index = 0
+
+for i in range(0, var_len):  
+  for j in range(0, len(cpy_grouped_nodes[i])): 
+    sum_weights = 0
+    for i2 in range(0, var_len):
+     for j2 in range(0, len(cpy_grouped_nodes[i2])):
+        if cpy_grouped_nodes[i][j][1] == cpy_grouped_nodes[i2][j2][0]:                  
+           sum_weights = sum_weights + cpy_grouped_nodes[i2][j2][2]        
+    tot_grouped_nodes[i][j].append(sum_weights)    
+  list_index +=1  
+
 
 #Using networkx to create a graph of linked nodes
 
@@ -139,8 +166,5 @@ print pagerank_values.values()
 for index in pagerank_values:
   print ""
   print index
-
-
-
 
 
