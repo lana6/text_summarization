@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import itertools
+import copy 
 from itertools import *
 import re
 import math
@@ -67,26 +68,33 @@ for (i,j,x) in tot_element_names:
 grouped_nodes = []  
 grouped_nodes.append([i,j,x])
 tot_grouped_nodes.append(grouped_nodes)       
-print tot_grouped_nodes
-node_len = len(tot_grouped_nodes)
-#temp_len = len(tot_grouped_nodes[0])
-#temp_len = len(tot_grouped_nodes[19])
 
 
-print tot_grouped_nodes[0]
-print ""
-print tot_grouped_nodes[0][0]
-print ""
-print tot_grouped_nodes[0][0][0]
+# Each list group needs a11 references to connected lists, this function appends linked lists where necessary 
+# A copy of tot_grouped_nodes is created as appending lists to it. A static list is needed in function.
 
 
-print tot_grouped_nodes[0]
-print ""
-print tot_grouped_nodes[1][0]
-print ""
-print tot_grouped_nodes[0][0][1]
-print ""
-print tot_grouped_nodes[0][1][1]
+cpy_grouped_nodes = []
+cpy_grouped_nodes = copy.deepcopy(tot_grouped_nodes) # Copy of original created
+var_len = len(cpy_grouped_nodes)
+flag = "negative"
+
+for i in range(0, var_len):
+  for j in range(0, len(cpy_grouped_nodes[i])):
+      for i2 in range(0, var_len):
+        flag = "negative"
+        for j2 in range(0, len(cpy_grouped_nodes[i2])):
+          if cpy_grouped_nodes[i][j][1] == cpy_grouped_nodes[i2][j2][0]:
+             if flag == "negative": # Ensures that only one list is copied into the new group
+                 temp_list = cpy_grouped_nodes[i][j] # Identifies list to be copied
+                 tot_grouped_nodes[i2].extend([temp_list]) # List appened to group
+                 flag = "positive" # Closes the door, this list cannot be copied to this group again
+
+for i in tot_grouped_nodes:
+  print i
+  print ""
+
+#Using networkx to create a graph of linked nodes
 
 G = nx.Graph()
 
@@ -131,5 +139,8 @@ print pagerank_values.values()
 for index in pagerank_values:
   print ""
   print index
+
+
+
 
 
