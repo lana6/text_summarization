@@ -23,6 +23,7 @@ while line != '':
 
 refined_file_lines = []
 
+
 # \w+ is a regular expression, it transfers the data into letters, digits and underscore. Removes everything else.
 
 for sentence in file_lines: # For characters such as letters, digits and underscore only
@@ -30,6 +31,7 @@ for sentence in file_lines: # For characters such as letters, digits and undersc
     if re.findall(r"\w+",file_lines[index]):# \w+ identifies only letters, digits and underscore.
         refined_file_lines.append(re.findall(r"\w+",file_lines[index]))
 
+number_sentences = len(refined_file_lines)
 total_common_words = []
 weighted_sen = []
 ele_name = []
@@ -89,24 +91,28 @@ tot_grouped_nodes.append(grouped_nodes)
 cpy_grouped_nodes = []
 cpy_grouped_nodes = copy.deepcopy(tot_grouped_nodes) # Copy of original created
 var_len = len(cpy_grouped_nodes)
-flag = "negative"
-
+flag = 0
+i3 = len(tot_grouped_nodes)
 for i in range(0, var_len):
-  for j in range(0, len(cpy_grouped_nodes[i])):
-      for i2 in range(0, var_len):
-        flag = "negative"
-        for j2 in range(0, len(cpy_grouped_nodes[i2])):
-          if cpy_grouped_nodes[i][j][1] == cpy_grouped_nodes[i2][j2][0]:
-             if flag == "negative": # Ensures that only one list is copied into the new group
-                 temp_list = cpy_grouped_nodes[i][j] # Identifies list to be copied                
-                 temp_list2 = []
-                 temp_list2.append(temp_list[1]) # append takes one arguement
-                 temp_list2.append(temp_list[0])
-                 temp_list2.append(temp_list[2])
-                 tot_grouped_nodes[i2].extend([temp_list2]) # List appened to group                
-                 flag = "positive" # Closes the door, this list cannot be copied to this group again
-
-
+    for j in range(0, len(cpy_grouped_nodes[i])):
+        flag = 0
+        temp_list = cpy_grouped_nodes[i][j] # Identifies list to be copied
+        temp_list2 = [[temp_list[1],temp_list[0],temp_list[2]]]
+        endnode = cpy_grouped_nodes[i][j][1]
+        for i2 in range(0, var_len): # first check original groups
+            if endnode == cpy_grouped_nodes[i2][0][0]:
+                tot_grouped_nodes[i2].extend(temp_list2) # List appended to group
+                flag =  1 # indicate that the matching group has been found
+                break
+        if flag == 0: # if we didn't find a matching group in the original groups check the new groups
+            for i4 in range(i2+1,i3): 
+                if endnode == tot_grouped_nodes[i4][0][0]:
+                    tot_grouped_nodes[i4].extend(temp_list2) # List appended to group
+                    flag = 1 # indicate that the matching group has been found
+                    break
+        if flag == 0: # if we didn't find a matching group in the original or new groups we need to create a new group
+            tot_grouped_nodes.extend([temp_list2])
+            i3 += 1
 # For each node add up all the weighted linked values connected to it and save total to respective list.
 
 cpy_grouped_nodes = []
