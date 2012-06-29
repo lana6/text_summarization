@@ -134,8 +134,8 @@ for i in range(0, var_len):
 
 # Set the initial score for each sentence. ie (1 - d) where d is the damping factor of 0.85
 
-str_damping_factor = str(0.15)
-d = decimal.Decimal(str_damping_factor)
+#str_damping_factor = str(0.15)
+#d = decimal.Decimal(str_damping_factor)
 sentence_score = [1,1,1,0.15]
 #sentence_score.append([0.15]) 
 
